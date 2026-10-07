@@ -1,0 +1,14 @@
+{
+  "name": "spotify-mod",
+  "description": "Listen to Spotify inside Claude Code — inline mini status bar, sidebar player with album cover, popup window, Spotify login, and voice search",
+  "owner": {
+    "name": "Hemanth HM"
+  },
+  "plugins": [
+    {
+      "name": "spotify-mod",
+      "source": "./",
+      "description": "Inline mini status bar, sidebar player with real album cover artwork, popup window, Spotify login, and voice search inside Claude Code"
+    }
+  ]
+}

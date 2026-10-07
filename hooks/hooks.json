@@ -1,0 +1,4 @@
+{
+  "description": "Spotify Mod for Claude Code — tiny mini controller, pull-out side panel player, and voice-enabled track/playlist search",
+  "modules": ["./register.js"]
+}

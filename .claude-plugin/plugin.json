@@ -1,0 +1,8 @@
+{
+  "name": "spotify-mod",
+  "version": "0.1.0",
+  "description": "Listen to Spotify inside Claude Code — inline mini status bar, sidebar player with album cover, popup window, Spotify login, and voice search",
+  "author": {
+    "name": "Hemanth HM"
+  }
+}
