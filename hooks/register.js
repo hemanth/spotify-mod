@@ -364,11 +364,16 @@ export async function searchSpotifyTracks($, query) {
       (t.artist && t.artist.toLowerCase().includes(lower)) ||
       (t.category && t.category.toLowerCase().includes(lower))
   );
+  const exactCurated = CURATED_TRACKS.find((t) => t.title.toLowerCase() === lower);
+  const searchTerm =
+    exactCurated && exactCurated.artist && !exactCurated.artist.toLowerCase().includes('spotify')
+      ? exactCurated.title + ' ' + exactCurated.artist
+      : cleaned;
 
   try {
     const searchUrl =
       'https://itunes.apple.com/search?media=music&entity=song&limit=8&term=' +
-      encodeURIComponent(cleaned);
+      encodeURIComponent(searchTerm);
     const res = await $.http.fetch(searchUrl);
     if (res && res.ok && res.text) {
       const parsed = JSON.parse(res.text);

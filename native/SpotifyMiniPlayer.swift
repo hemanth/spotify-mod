@@ -626,7 +626,7 @@ final class SpotifyMiniAppDelegate: NSObject, NSApplicationDelegate, NSWindowDel
             height: 620
         )
         panel.isProgrammaticMove = true
-        panel.setFrame(loginRect, display: true, animate: true)
+        panel.setFrame(loginRect, display: true, animate: false)
         panel.isProgrammaticMove = false
         panel.alphaValue = 1.0
         titleLabel.stringValue = "Spotify Login - Sign in to your account"
@@ -889,6 +889,7 @@ final class SpotifyMiniAppDelegate: NSObject, NSApplicationDelegate, NSWindowDel
             latest.shouldShowLogin = false
             latest.save()
             currentState = latest
+            lastAppliedSeq = latest.commandSeq
             openLoginSheet()
             return
         }
@@ -916,8 +917,14 @@ final class SpotifyMiniAppDelegate: NSObject, NSApplicationDelegate, NSWindowDel
     }
 
     private func applyState(_ state: SpotifyPlayerState, forceReloadTrack: Bool) {
+        let isNewCommand = state.commandSeq != lastAppliedSeq
         currentState = state
         lastAppliedSeq = state.commandSeq
+
+        if isNewCommand && state.shouldShowLogin != true && isLoginWindowActive {
+            isLoginWindowActive = false
+            NSApp.setActivationPolicy(.accessory)
+        }
 
         if !isLoginWindowActive {
             titleLabel.stringValue = "\(state.title) - \(state.artist)"
@@ -929,7 +936,7 @@ final class SpotifyMiniAppDelegate: NSObject, NSApplicationDelegate, NSWindowDel
             let targetRect = computeWindowRect(for: state)
             if panel.frame != targetRect {
                 panel.isProgrammaticMove = true
-                panel.setFrame(targetRect, display: true, animate: true)
+                panel.setFrame(targetRect, display: true, animate: false)
                 panel.isProgrammaticMove = false
             }
 
@@ -1011,6 +1018,15 @@ final class SpotifyMiniAppDelegate: NSObject, NSApplicationDelegate, NSWindowDel
             }
 
             if didChangeMetadata {
+                let latestOnDisk = SpotifyPlayerState.load()
+                updated.position = latestOnDisk.position
+                updated.controllerMode = latestOnDisk.controllerMode
+                updated.sizePreset = latestOnDisk.sizePreset
+                updated.shouldShowLogin = latestOnDisk.shouldShowLogin
+                updated.customX = latestOnDisk.customX
+                updated.customY = latestOnDisk.customY
+                updated.customWidth = latestOnDisk.customWidth
+                updated.customHeight = latestOnDisk.customHeight
                 updated.save()
                 self.currentState = updated
                 if !self.isLoginWindowActive {
@@ -1376,6 +1392,10 @@ case "play", "open":
 case "login", "auth":
     state.shouldQuit = false
     state.shouldShowLogin = true
+    state.customX = nil
+    state.customY = nil
+    state.customWidth = nil
+    state.customHeight = nil
     state.commandSeq += 1
     state.updatedAt = Date().timeIntervalSince1970
     state.save()
@@ -1392,6 +1412,7 @@ case "logout":
 
 case "mode", "mini", "panel", "side-panel", "popup":
     state.shouldQuit = false
+    state.shouldShowLogin = false
     let targetMode = subcommand == "mode" ? (args.count >= 2 ? args[1] : "mini") : subcommand
     state.controllerMode = SpotifyParser.normalizeMode(targetMode)
     state.sizePreset = state.controllerMode == "side-panel" ? "sidebar" : state.controllerMode == "mini" ? "mini" : "compact"

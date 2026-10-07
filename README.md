@@ -2,6 +2,10 @@
 
 Listen to Spotify inside Claude Code with an **Inline Mini Status Bar**, a **Minimal Sidebar Player** (rendering real PNG album cover artwork), or a **Popup Window**, plus **Spotify Login** and **Voice-Enabled Search**.
 
+![spotify-mod running inside Claude Code](./demo/screenshot.png)
+
+Watch the zoomed feature tour with audio: [`demo/spotify-mod-demo.mp4`](./demo/spotify-mod-demo.mp4)
+
 ## Install
 
 ```
